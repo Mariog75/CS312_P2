@@ -25,11 +25,6 @@ move([A,B,C,D,E,F,b,H,I], Player, [A,B,C,D,E,F,Player,H,I]).
 move([A,B,C,D,E,F,G,b,I], Player, [A,B,C,D,E,F,G,Player,I]).
 move([A,B,C,D,E,F,G,H,b], Player, [A,B,C,D,E,F,G,H,Player]).
 
-cornermove([b,B,C,D,E,F,G,H,I], Player, [Player,B,C,D,E,F,G,H,I]).
-cornermove([A,B,b,D,E,F,G,H,I], Player, [A,B,Player,D,E,F,G,H,I]).
-cornermove([A,B,C,D,E,F,b,H,I], Player, [A,B,C,D,E,F,Player,H,I]).
-cornermove([A,B,C,D,E,F,G,H,b], Player, [A,B,C,D,E,F,G,H,Player]).
-
 xmove([b,B,C,D,E,F,G,H,I], 1, [x,B,C,D,E,F,G,H,I]).
 xmove([A,b,C,D,E,F,G,H,I], 2, [A,x,C,D,E,F,G,H,I]).
 xmove([A,B,b,D,E,F,G,H,I], 3, [A,B,x,D,E,F,G,H,I]).
@@ -40,6 +35,17 @@ xmove([A,B,C,D,E,F,b,H,I], 7, [A,B,C,D,E,F,x,H,I]).
 xmove([A,B,C,D,E,F,G,b,I], 8, [A,B,C,D,E,F,G,x,I]).
 xmove([A,B,C,D,E,F,G,H,b], 9, [A,B,C,D,E,F,G,H,x]).
 xmove(Board, N, Board) :- write('Please pick numbers 1-9'), nl.
+
+omove([b,B,C,D,E,F,G,H,I], 1, [o,B,C,D,E,F,G,H,I]).
+omove([A,b,C,D,E,F,G,H,I], 2, [A,o,C,D,E,F,G,H,I]).
+omove([A,B,b,D,E,F,G,H,I], 3, [A,B,o,D,E,F,G,H,I]).
+omove([A,B,C,b,E,F,G,H,I], 4, [A,B,C,o,E,F,G,H,I]).
+omove([A,B,C,D,b,F,G,H,I], 5, [A,B,C,D,o,F,G,H,I]).
+omove([A,B,C,D,E,b,G,H,I], 6, [A,B,C,D,E,o,G,H,I]).
+omove([A,B,C,D,E,F,b,H,I], 7, [A,B,C,D,E,F,o,H,I]).
+omove([A,B,C,D,E,F,G,b,I], 8, [A,B,C,D,E,F,G,o,I]).
+omove([A,B,C,D,E,F,G,H,b], 9, [A,B,C,D,E,F,G,H,o]).
+omove(Board, N, Board) :- write('Please pick numbers 1-9'), nl.
 
 pcmovehard(Board, NewBoard):-
   move(Board, o, NewBoard),
@@ -68,14 +74,37 @@ pcmoveeasy(Board, NewBoard):-
 
 displayboard([A,B,C,D,E,F,G,H,I]):- write([A,B,C]),nl,write([D,E,F]),nl,write([G,H,I]),nl, nl.
 
+play:-
+  explain_all,
+  read(N),
+  playmode(N).
 
-playhard:- explain, playfromhard([b,b,b,b,b,b,b,b,b]).
+playmode(1):- playpvc.
 
-playeasy:- explain, playfromeasy([b,b,b,b,b,b,b,b,b]).
+playmode(2):- playpvp.
+
+playpvc:-
+  explain_difficulty,
+  read(N),
+  playdifficulty(N).
+
+playpvp:-
+  explain,
+  play_p1([b,b,b,b,b,b,b,b,b]).
+
+playdifficulty(1):- explain, playfromhard([b,b,b,b,b,b,b,b,b]).
+
+playdifficulty(2):- explain, playfromeasy([b,b,b,b,b,b,b,b,b]).
 
 explain:-
   write('Please use numbers 1-9 to pick where to move'), nl,
   displayboard([1,2,3,4,5,6,7,8,9]).
+
+explain_all:-
+  write('Press 1 for P1 v PC'), nl, write('Press 2 for P1 v P2'), nl.
+
+explain_difficulty:-
+  write('Press 1 for Hard'), nl, write('Press 2 for Easy'), nl.
 
 
 playfromeasy(Board):-win(Board, x), write('You win!').
@@ -95,3 +124,16 @@ playfromhard(Board):- read(N),
   pcmovehard(NewBoard, NewerBoard),
   displayboard(NewerBoard),
   playfromhard(NewerBoard).
+
+
+play_p1(Board):-win(Board, o), write('P2 wins!').
+play_p1(Board):- read(N),
+xmove(Board, N, NewBoard),
+displayboard(NewBoard),
+play_p2(NewBoard).
+
+play_p2(Board):-win(Board, x), write('P1 wins!').
+play_p2(Board):- read(N),
+omove(Board, N, NewBoard),
+displayboard(NewBoard),
+play_p1(NewBoard).
