@@ -80,8 +80,10 @@ play:-
   playmode(N).
 
 playmode(1):- playpvc.
-
 playmode(2):- playpvp.
+playmode(N):- write('Please pick one of the options above'), nl,
+  play.
+
 
 playpvc:-
   explain_difficulty,
@@ -93,8 +95,9 @@ playpvp:-
   play_p1([b,b,b,b,b,b,b,b,b]).
 
 playdifficulty(1):- explain, playfromhard([b,b,b,b,b,b,b,b,b]).
-
 playdifficulty(2):- explain, playfromeasy([b,b,b,b,b,b,b,b,b]).
+playdifficulty(N):- write('Please pick one of the options above'), nl,
+  playpvc.
 
 explain:-
   write('Please use numbers 1-9 to pick where to move'), nl,
